@@ -1,8 +1,7 @@
 Package: premieR
 Title: Working the Premier Healthcare Database in R
 Version: 0.0.0.9000
-Authors@R: 
-    person("Stephen", "Rhodes", , "stephen.rhodes@uhhospitals.org", role = c("aut", "cre"))
+Authors@R: person("Stephen", "Rhodes", , "stephen.rhodes@uhhospitals.org", role = c("aut", "cre"))
 Description: Functions for reading and manipulating data from the [premier healthcare database](https://products.premierinc.com/downloads/PremierHealthcareDatabaseWhitepaper.pdf)
 License: `use_mit_license()`
 Encoding: UTF-8
