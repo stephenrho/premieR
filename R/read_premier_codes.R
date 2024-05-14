@@ -59,9 +59,18 @@ read_premier_codes = function(files, icd9=NULL, icd10=NULL, cpt=NULL,
     new_column_prefix = "CHARGE_"
   }
 
+  readf <- function(file){
+    stopifnot(length(file) == 1)
+    if (grepl("sas7bdat", file)){
+      haven::read_sas(file)
+    } else{
+      data.table::fread(file)
+    }
+  }
+
   # read files
   out <-lapply(X = files, function(x) {
-    haven::read_sas(x)
+    readf(x)
   })
   # go from list to df
   out = data.table::rbindlist(out)
