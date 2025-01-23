@@ -101,7 +101,7 @@ read_premier2 <- function(year, quarter,
     if (!missing(medrec_keys) | !missing(pat_keys)) cptdata <- subset(cptdata, PAT_KEY %in% dat$PAT_KEY)
 
     cptitems <- names(cpt)
-    cptdata[, (paste0("cpt_", cptitems)) := lapply(cptitems, \(x) matchfun(CPT_CODE, cpt[x]))]
+    cptdata[, (paste0("cpt_", cptitems)) := lapply(cptitems, \(x) matchfun(CPT_CODE, cpt[[x]]))]
 
     dat <- data.table::merge.data.table(x = dat,
                              y = cptdata[, lapply(.SD, paste0, collapse="|"), by="PAT_KEY", .SDcols=c("CPT_CODE", cols_to_keep$cpt)],
@@ -128,11 +128,11 @@ read_premier2 <- function(year, quarter,
 
     icd9ditems <- names(icd9_diag)
     if (!is.null(icd9ditems))
-      icd_diagdata[, (paste0("icd9_", icd9ditems)) := lapply(icd9ditems, \(x) matchfun(ICD_CODE, icd9_diag[x]) & ICD_VERSION == 9)]
+      icd_diagdata[, (paste0("icd9_", icd9ditems)) := lapply(icd9ditems, \(x) matchfun(ICD_CODE, icd9_diag[[x]]) & ICD_VERSION == 9)]
 
     icd10ditems <- names(icd10_diag)
     if (!is.null(icd10ditems))
-      icd_diagdata[, (paste0("icd10_", icd10ditems)) := lapply(icd10ditems, \(x) matchfun(ICD_CODE, icd10_diag[x]) & ICD_VERSION == 10)]
+      icd_diagdata[, (paste0("icd10_", icd10ditems)) := lapply(icd10ditems, \(x) matchfun(ICD_CODE, icd10_diag[[x]]) & ICD_VERSION == 10)]
 
     # combine
     icdditems <- intersect(icd9ditems, icd10ditems)
@@ -163,11 +163,11 @@ read_premier2 <- function(year, quarter,
 
     icd9ditems <- names(icd9_proc)
     if (!is.null(icd9ditems))
-      icd_procdata[, (paste0("icdp9_", icd9ditems)) := lapply(icd9ditems, \(x) matchfun(ICD_CODE, icd9_proc[x]) & ICD_VERSION == 9)]
+      icd_procdata[, (paste0("icdp9_", icd9ditems)) := lapply(icd9ditems, \(x) matchfun(ICD_CODE, icd9_proc[[x]]) & ICD_VERSION == 9)]
 
     icd10ditems <- names(icd10_proc)
     if (!is.null(icd10ditems))
-      icd_procdata[, (paste0("icdp10_", icd10ditems)) := lapply(icd10ditems, \(x) matchfun(ICD_CODE, icd10_proc[x]) & ICD_VERSION == 10)]
+      icd_procdata[, (paste0("icdp10_", icd10ditems)) := lapply(icd10ditems, \(x) matchfun(ICD_CODE, icd10_proc[[x]]) & ICD_VERSION == 10)]
 
     # combine
     icdditems <- intersect(icd9ditems, icd10ditems)
@@ -190,7 +190,7 @@ read_premier2 <- function(year, quarter,
     if (!missing(medrec_keys) | !missing(pat_keys)) billdata <- subset(billdata, PAT_KEY %in% dat$PAT_KEY)
 
     billitems <- names(charge)
-    billdata[, (paste0("charge_", billitems)) := lapply(billitems, \(x) matchfun(STD_CHG_CODE, charge[x]))]
+    billdata[, (paste0("charge_", billitems)) := lapply(billitems, \(x) matchfun(STD_CHG_CODE, charge[[x]]))]
 
     dat <- data.table::merge.data.table(x = dat,
                                         y = billdata[, lapply(.SD, paste0, collapse="|"), by="PAT_KEY", .SDcols=c("STD_CHG_CODE", cols_to_keep$charge)],
@@ -206,6 +206,7 @@ read_premier2 <- function(year, quarter,
   return(dat)
 }
 
+# library(premieR)
 # read_premier2(year = 2000, quarter = 1, cpt = list("A"="23456"),
 #               icd9_diag = list("P" = "188"), icd10_diag = list("P" = "C65"),
 #               icd9_proc = list("s" = "12.22"), dir = "ignore/")
@@ -228,3 +229,11 @@ read_premier2 <- function(year, quarter,
 #               icd9_diag = list("P" = "188"), icd10_diag = list("P" = "C65"),
 #               icd9_proc = list("s" = "12.22"), dir = "ignore/",
 #               medrec_keys = mrks, pat_keys = pks) #w/ mrk
+#
+#
+#
+# x = read_premier2(year = 2000, quarter = 2,
+#                   cpt = list(SCH = c("58541", "58542","58543", "58544", "58180")),
+#               dir = "ignore/", partial = F)
+#
+# x$cpt_SCH |> table()
