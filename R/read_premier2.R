@@ -101,6 +101,7 @@ read_premier2 <- function(year, quarter,
     if (!missing(medrec_keys) | !missing(pat_keys)) cptdata <- subset(cptdata, PAT_KEY %in% dat$PAT_KEY)
 
     cptitems <- names(cpt)
+    if (any(duplicated(cptitems))) stop("check cpt code names for duplicates")
     cptdata[, (paste0("cpt_", cptitems)) := lapply(cptitems, \(x) matchfun(CPT_CODE, cpt[[x]]))]
 
     dat <- data.table::merge.data.table(x = dat,
@@ -126,16 +127,18 @@ read_premier2 <- function(year, quarter,
                                         y = icd_diagdata[, lapply(.SD, paste0, collapse="|"), by="PAT_KEY", .SDcols=c("ICD_VERSION", "ICD_CODE", cols_to_keep$icd_diag)],
                                         by = "PAT_KEY", all.x = TRUE)
 
-    icd9ditems <- names(icd9_diag)
-    if (!is.null(icd9ditems))
-      icd_diagdata[, (paste0("icd9_", icd9ditems)) := lapply(icd9ditems, \(x) matchfun(ICD_CODE, icd9_diag[[x]]) & ICD_VERSION == 9)]
+    icd9items <- names(icd9_diag)
+    if (any(duplicated(icd9items))) stop("check icd 9 code names for duplicates")
+    if (!is.null(icd9items))
+      icd_diagdata[, (paste0("icd9_", icd9items)) := lapply(icd9items, \(x) matchfun(ICD_CODE, icd9_diag[[x]]) & ICD_VERSION == 9)]
 
-    icd10ditems <- names(icd10_diag)
-    if (!is.null(icd10ditems))
-      icd_diagdata[, (paste0("icd10_", icd10ditems)) := lapply(icd10ditems, \(x) matchfun(ICD_CODE, icd10_diag[[x]]) & ICD_VERSION == 10)]
+    icd10items <- names(icd10_diag)
+    if (any(duplicated(icd10items))) stop("check icd 10 code names for duplicates")
+    if (!is.null(icd10items))
+      icd_diagdata[, (paste0("icd10_", icd10items)) := lapply(icd10items, \(x) matchfun(ICD_CODE, icd10_diag[[x]]) & ICD_VERSION == 10)]
 
     # combine
-    icdditems <- intersect(icd9ditems, icd10ditems)
+    icdditems <- intersect(icd9items, icd10items)
     for (i in icdditems){
       #icd_diagdata[, (paste0("ICD_", i)) := apply(icd_diagdata[, paste0("ICD", 9:10, "_", i), with=FALSE], 1, any) ]
       icd_diagdata[, (paste0("icd_", i)) := icd_diagdata[[paste0("icd", 9, "_", i)]] | icd_diagdata[[paste0("icd", 10, "_", i)]] ]
@@ -161,16 +164,18 @@ read_premier2 <- function(year, quarter,
                                         y = icd_procdata[, lapply(.SD, paste0, collapse="|"), by="PAT_KEY", .SDcols=c("ICD_VERSION", "ICD_CODE", cols_to_keep$icd_proc)],
                                         by = "PAT_KEY", all.x = TRUE, suffixes = c("", "_PROC"))
 
-    icd9ditems <- names(icd9_proc)
-    if (!is.null(icd9ditems))
-      icd_procdata[, (paste0("icdp9_", icd9ditems)) := lapply(icd9ditems, \(x) matchfun(ICD_CODE, icd9_proc[[x]]) & ICD_VERSION == 9)]
+    icd9items <- names(icd9_proc)
+    if (any(duplicated(icd9items))) stop("check icd 9 proc code names for duplicates")
+    if (!is.null(icd9items))
+      icd_procdata[, (paste0("icdp9_", icd9items)) := lapply(icd9items, \(x) matchfun(ICD_CODE, icd9_proc[[x]]) & ICD_VERSION == 9)]
 
-    icd10ditems <- names(icd10_proc)
-    if (!is.null(icd10ditems))
-      icd_procdata[, (paste0("icdp10_", icd10ditems)) := lapply(icd10ditems, \(x) matchfun(ICD_CODE, icd10_proc[[x]]) & ICD_VERSION == 10)]
+    icd10items <- names(icd10_proc)
+    if (any(duplicated(icd10items))) stop("check icd 10 proc code names for duplicates")
+    if (!is.null(icd10items))
+      icd_procdata[, (paste0("icdp10_", icd10items)) := lapply(icd10items, \(x) matchfun(ICD_CODE, icd10_proc[[x]]) & ICD_VERSION == 10)]
 
     # combine
-    icdditems <- intersect(icd9ditems, icd10ditems)
+    icdditems <- intersect(icd9items, icd10items)
     for (i in icdditems){
       #icd_procdata[, (paste0("ICD_", i)) := apply(icd_procdata[, paste0("ICD", 9:10, "_", i), with=FALSE], 1, any) ]
       icd_procdata[, (paste0("icdp_", i)) := icd_procdata[[paste0("icdp", 9, "_", i)]] | icd_procdata[[paste0("icdp", 10, "_", i)]] ]
