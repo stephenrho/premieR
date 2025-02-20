@@ -113,7 +113,7 @@ mk_data <- function(files,
   # make the combination of columns requested
   if (!missing(combine)){
     if (!is.list(combine) || is.null(names(combine))) stop("combine should be a named list")
-    if (names(combine) %in% cols) stop("name in combine is already in data. Please change")
+    if (any(names(combine) %in% cols)) stop("name in combine is already in data. Please change")
     #if (any(!unlist(combine) %in% cols)) stop("column(s) in combine are not in data. Please check")
 
     dat[, paste0(names(combine)) := lapply(combine, eval, envir=dat)]
